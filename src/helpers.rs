@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-pub struct Input(&'static str);
+pub struct Input(pub &'static str);
 
 impl Input {
   pub fn lines(&self) -> Vec<&str> {

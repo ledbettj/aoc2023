@@ -1,12 +1,11 @@
-use crate::Input;
 
-const INPUT : Input = Input(include_str!("../inputs/dayDAY.txt"));
+const INPUT : &'static str = include_str!("../inputs/dayDAY.txt");
 
 #[cfg(test)]
 mod tests {
   use super::*;
 
-  const EXAMPLE_INPUT : Input = Input("");
+  const EXAMPLE_INPUT : &'static str = "";
 
   #[test]
   fn part1_example() {
