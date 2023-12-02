@@ -3,29 +3,66 @@ use std::str::FromStr;
 
 const INPUT: &'static str = include_str!("../inputs/day2.txt");
 
-struct Game {
+pub struct Game {
   id: usize,
   plays: Vec<Play>,
 }
 
 impl Game {
+  /// Given a list of game descriptors, return a list of Game objects
+  ///
+  /// # Example
+  /// ```
+  /// use aoc::day2::Game;
+  ///
+  /// let input = "Game 1: 3 blue\nGame 2: 3 red";
+  /// let games = Game::load_all(input);
+  ///
+  /// assert!(games.is_ok());
+  /// assert_eq!(games.unwrap().len(), 2);
+  /// ```
   pub fn load_all(s: &'static str) -> Result<Vec<Game>, &'static str> {
     s.lines().map(|line| line.parse()).collect::<Result<_, _>>()
   }
 
+  /// Determine if a game is possible with the given block constraints.
+  ///
+  /// # Example
+  /// ```
+  /// use aoc::day2::Game;
+  ///
+  /// let game : Game = "Game 1: 3 blue; 1 red; 2 green;".parse().expect("Failed to parse game");
+  ///
+  /// assert!(game.is_possible(1, 2, 3));
+  /// assert!(!game.is_possible(0, 1, 5));
+  /// ```
   pub fn is_possible(&self, r: usize, g: usize, b: usize) -> bool {
     self.plays.iter().all(|play| play.is_possible(r, g, b))
   }
 
-  pub fn min_power(&self) -> usize {
-    let (r, g, b) = self.plays.iter().fold((0, 0, 0), |(ar, ag, ab), p| {
+  /// Return the minimum number of each block color required for this game.
+  ///
+  /// # Example
+  /// ```
+  /// use aoc::day2::Game;
+  ///
+  /// let game : Game = "Game 1: 1 red, 2 blue; 2 red; 2 green;".parse().expect("Failed to parse game");
+  ///
+  /// assert_eq!(game.min_blocks(), (2, 2, 2));
+  /// ```
+  pub fn min_blocks(&self) -> (usize, usize, usize) {
+    self.plays.iter().fold((0, 0, 0), |(ar, ag, ab), p| {
       let r = if p.r > ar { p.r } else { ar };
       let g = if p.g > ag { p.g } else { ag };
       let b = if p.b > ab { p.b } else { ab };
 
       (r, g, b)
-    });
+    })
+  }
 
+  /// Return the power of the game, which is the number of required blocks multiplied together.
+  pub fn power(&self) -> usize {
+    let (r, g, b) = self.min_blocks();
     r * g * b
   }
 }
@@ -33,6 +70,18 @@ impl Game {
 impl FromStr for Game {
   type Err = &'static str;
 
+  /// Parse a game from a single line
+  ///
+  /// The line should be in the format:
+  /// "Game 100: 4 red, 5 blue, 3 green; 1 blue, 2 green; 3 red"
+  ///
+  /// # Example:
+  /// ```
+  /// use aoc::day2::Game;
+  ///
+  /// let g = "Game 100: 4 red, 5 blue, 3 green; 1 blue, 2 green; 3 red".parse::<Game>();
+  /// assert!(g.is_ok());
+  /// ```
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     let (left, right) = s.split_once(": ").ok_or("no colon found")?;
     let (_, id) = left.split_once(" ").ok_or("No space in Game id")?;
@@ -49,12 +98,23 @@ impl FromStr for Game {
 }
 
 #[derive(Default)]
-struct Play {
-  r: usize,
-  g: usize,
-  b: usize,
+pub struct Play {
+  pub r: usize,
+  pub g: usize,
+  pub b: usize,
 }
 
+  /// Determine if a game is possible with the given block constraints.
+  ///
+  /// # Example
+  /// ```
+  /// use aoc::day2::Play;
+  ///
+  /// let play = Play { r: 1, g: 1, b: 1 };
+  ///
+  /// assert!(play.is_possible(1, 1, 1));
+  /// assert!(!play.is_possible(0, 1, 1));
+  /// ```
 impl Play {
   pub fn is_possible(&self, r: usize, g: usize, b: usize) -> bool {
     self.r <= r && self.g <= g && self.b <= b
@@ -126,7 +186,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
   fn part2_example() {
     let games = Game::load_all(EXAMPLE_INPUT).expect("Failed to parse games");
 
-    let sum: usize = games.iter().map(|g| g.min_power()).sum();
+    let sum: usize = games.iter().map(|g| g.power()).sum();
 
     assert_eq!(sum, 2286);
   }
@@ -135,7 +195,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
   fn part2_solution() {
     let games = Game::load_all(INPUT).expect("Failed to parse games");
 
-    let sum: usize = games.iter().map(|g| g.min_power()).sum();
+    let sum: usize = games.iter().map(|g| g.power()).sum();
 
     assert_eq!(sum, 59795);
   }

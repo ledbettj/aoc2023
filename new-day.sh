@@ -32,6 +32,6 @@ if [ $EXISTING -eq 0 ]; then
     echo "module definition already found"
 else
     echo "#[allow(dead_code)]" >> src/lib.rs
-    echo "mod day$DAY;" >> src/lib.rs
+    echo "pub mod day$DAY;" >> src/lib.rs
     echo "added module definition"
 fi
