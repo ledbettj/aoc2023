@@ -2,12 +2,12 @@ use std::{collections::HashMap, str::FromStr};
 
 use regex::Regex;
 
-const INPUT : &'static str = include_str!("../inputs/day3.txt");
+const INPUT: &'static str = include_str!("../inputs/day3.txt");
 
 #[derive(Debug, Clone, Copy)]
 pub enum PartValue {
   Number(usize),
-  Symbol(char)
+  Symbol(char),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -32,7 +32,7 @@ impl Part {
 
 #[derive(Debug)]
 pub struct Engine {
-  pub parts: HashMap<(isize, isize), Part>
+  pub parts: HashMap<(isize, isize), Part>,
 }
 
 impl FromStr for Engine {
@@ -42,29 +42,32 @@ impl FromStr for Engine {
     let mut parts = HashMap::new();
     let r = Regex::new(r"\d+").expect("Failed to compile regex");
 
-    s
-      .trim()
-      .lines()
-      .enumerate()
-      .for_each(|(y, line)|{
-        line
-          .chars()
-          .enumerate()
-          .filter(|(_, ch)| !ch.is_digit(10) && *ch != '.')
-          .for_each(|(x, ch)|{
-            parts.insert((x as isize, y as isize), Part { value: PartValue::Symbol(ch), len: 1 });
-          });
+    s.trim().lines().enumerate().for_each(|(y, line)| {
+      line
+        .chars()
+        .enumerate()
+        .filter(|(_, ch)| !ch.is_digit(10) && *ch != '.')
+        .for_each(|(x, ch)| {
+          parts.insert(
+            (x as isize, y as isize),
+            Part {
+              value: PartValue::Symbol(ch),
+              len: 1,
+            },
+          );
+        });
 
-        r
-          .captures_iter(line)
-          .for_each(|capture| {
-            let m = capture.get(0).unwrap();
-            let v : usize = m.as_str().parse().unwrap();
-            let part = Part { value: PartValue::Number(v), len: m.len() };
-            let x = m.start();
-            parts.insert((x as isize, y as isize), part);
-          });
+      r.captures_iter(line).for_each(|capture| {
+        let m = capture.get(0).unwrap();
+        let v: usize = m.as_str().parse().unwrap();
+        let part = Part {
+          value: PartValue::Number(v),
+          len: m.len(),
+        };
+        let x = m.start();
+        parts.insert((x as isize, y as isize), part);
       });
+    });
 
     Ok(Engine { parts })
   }
@@ -84,19 +87,15 @@ impl Engine {
   //     })
 
   // }
-  
+
   pub fn symbol_adjacent_parts(&self) -> Vec<usize> {
     self
       .parts
       .iter()
-      .filter(|&(pos, p)|{
-        p.is_number() && self.is_symbol_adjacent(*pos, p.len)
-      })
-      .map(|(_, p)|{
-        match p.value {
-          PartValue::Number(n) => n,
-          _ => unreachable!()
-        }
+      .filter(|&(pos, p)| p.is_number() && self.is_symbol_adjacent(*pos, p.len))
+      .map(|(_, p)| match p.value {
+        PartValue::Number(n) => n,
+        _ => unreachable!(),
       })
       .collect()
   }
@@ -131,7 +130,7 @@ impl Engine {
 mod tests {
   use super::*;
 
-  const EXAMPLE_INPUT : &'static str = "467..114..
+  const EXAMPLE_INPUT: &'static str = "467..114..
 ...*......
 ..35..633.
 ......#...
@@ -144,27 +143,23 @@ mod tests {
 
   #[test]
   fn part1_example() {
-    let e : Engine = EXAMPLE_INPUT.parse().expect("Failed to parse!");
-    let s : usize = e.symbol_adjacent_parts().iter().sum();
+    let e: Engine = EXAMPLE_INPUT.parse().expect("Failed to parse!");
+    let s: usize = e.symbol_adjacent_parts().iter().sum();
 
     assert_eq!(s, 4361);
   }
 
   #[test]
   fn part1_solution() {
-    let e : Engine = INPUT.parse().expect("Failed to parse!");
-    let s : usize = e.symbol_adjacent_parts().iter().sum();
+    let e: Engine = INPUT.parse().expect("Failed to parse!");
+    let s: usize = e.symbol_adjacent_parts().iter().sum();
 
     assert_eq!(s, 521515);
   }
 
   #[test]
-  fn part2_example() {
-
-  }
+  fn part2_example() {}
 
   #[test]
-  fn part2_solution() {
-
-  }
+  fn part2_solution() {}
 }

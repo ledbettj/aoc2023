@@ -104,17 +104,17 @@ pub struct Play {
   pub b: usize,
 }
 
-  /// Determine if a game is possible with the given block constraints.
-  ///
-  /// # Example
-  /// ```
-  /// use aoc::day2::Play;
-  ///
-  /// let play = Play { r: 1, g: 1, b: 1 };
-  ///
-  /// assert!(play.is_possible(1, 1, 1));
-  /// assert!(!play.is_possible(0, 1, 1));
-  /// ```
+/// Determine if a game is possible with the given block constraints.
+///
+/// # Example
+/// ```
+/// use aoc::day2::Play;
+///
+/// let play = Play { r: 1, g: 1, b: 1 };
+///
+/// assert!(play.is_possible(1, 1, 1));
+/// assert!(!play.is_possible(0, 1, 1));
+/// ```
 impl Play {
   pub fn is_possible(&self, r: usize, g: usize, b: usize) -> bool {
     self.r <= r && self.g <= g && self.b <= b
