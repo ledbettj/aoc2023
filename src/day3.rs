@@ -25,6 +25,14 @@ impl Part {
     }
   }
 
+  pub fn is_star(&self) -> bool {
+    if let PartValue::Symbol('*') = self.value {
+      true
+    } else {
+      false
+    }
+  }
+
   pub fn is_symbol(&self) -> bool {
     !self.is_number()
   }
@@ -100,6 +108,44 @@ impl Engine {
       .collect()
   }
 
+  pub fn star_adjacent_parts(&self) -> HashMap<(isize, isize), Vec<(isize, isize)>> {
+    self
+      .parts
+      .iter()
+      .filter(|&(_, p)| p.is_number())
+      .map(|(&pos, p)| (pos, self.adjacent_stars(pos, p.len)))
+      .filter(|(_, stars)| !stars.is_empty())
+      .collect()
+  }
+
+  fn adjacent_stars(&self, (x, y): (isize, isize), len: usize) -> Vec<(isize, isize)> {
+    let mut results = vec![];
+
+    for test_x in (x - 1)..(x + 1 + len as isize) {
+      let above = (test_x, y - 1);
+      let below = (test_x, y + 1);
+
+      if self.parts.get(&above).is_some_and(|part| part.is_star()) {
+        results.push(above);
+      }
+      if self.parts.get(&below).is_some_and(|part| part.is_symbol()) {
+        results.push(below);
+      }
+    }
+
+    let before = (x - 1, y);
+    let after = (x + len as isize, y);
+
+    if self.parts.get(&before).is_some_and(|part| part.is_symbol()) {
+      results.push(before);
+    }
+    if self.parts.get(&after).is_some_and(|part| part.is_symbol()) {
+      results.push(after);
+    }
+
+    results
+  }
+
   fn is_symbol_adjacent(&self, (x, y): (isize, isize), len: usize) -> bool {
     for test_x in (x - 1)..(x + 1 + len as isize) {
       let above = (test_x, y - 1);
@@ -158,8 +204,60 @@ mod tests {
   }
 
   #[test]
-  fn part2_example() {}
+  fn part2_example() {
+    let e: Engine = EXAMPLE_INPUT.parse().expect("Failed to parse!");
+    let mut m: HashMap<(isize, isize), Vec<(isize, isize)>> = HashMap::new();
+
+    e.star_adjacent_parts().iter().for_each(|(&pos, stars)| {
+      stars.iter().for_each(|&star_pos| {
+        m.entry(star_pos)
+          .and_modify(|list| list.push(pos))
+          .or_insert_with(|| vec![pos]);
+      });
+    });
+
+    let s = m
+      .iter()
+      .filter(|(star_pos, parts)| parts.len() == 2)
+      .map(|(_, parts)| {
+        if let PartValue::Number(v1) = e.parts.get(&parts[0]).unwrap().value {
+          if let PartValue::Number(v2) = e.parts.get(&parts[1]).unwrap().value {
+            return v1 * v2;
+          }
+        }
+        panic!("shit went bad");
+      })
+      .sum::<usize>();
+
+    assert_eq!(s, 467835);
+  }
 
   #[test]
-  fn part2_solution() {}
+  fn part2_solution() {
+    let e: Engine = INPUT.parse().expect("Failed to parse!");
+    let mut m: HashMap<(isize, isize), Vec<(isize, isize)>> = HashMap::new();
+
+    e.star_adjacent_parts().iter().for_each(|(&pos, stars)| {
+      stars.iter().for_each(|&star_pos| {
+        m.entry(star_pos)
+          .and_modify(|list| list.push(pos))
+          .or_insert_with(|| vec![pos]);
+      });
+    });
+
+    let s = m
+      .iter()
+      .filter(|(star_pos, parts)| parts.len() == 2)
+      .map(|(_, parts)| {
+        if let PartValue::Number(v1) = e.parts.get(&parts[0]).unwrap().value {
+          if let PartValue::Number(v2) = e.parts.get(&parts[1]).unwrap().value {
+            return v1 * v2;
+          }
+        }
+        panic!("shit went bad");
+      })
+      .sum::<usize>();
+
+    assert_eq!(s, 69527306);
+  }
 }
