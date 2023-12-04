@@ -51,39 +51,37 @@ impl Card {
     let r = 0..(cards.len());
     let mut total = 0;
 
+    // map of card number => number of instances of that card.
+    // initially we have 1 of all the supplied cards
     let mut counts: HashMap<usize, usize> = r.map(|index| (index, 1)).collect();
 
-    loop {
-      let mut changed = false;
-
+    while !counts.is_empty() {
       for index in 0..(cards.len()) {
         let card = cards.get(index).unwrap();
         let count = *counts.get(&index).unwrap_or(&0);
 
+        counts.remove(&index);
+        total += count;
+
+        // if we don't have any of this card, ignore
         if count == 0 {
           continue;
         }
 
+        // tally these cards and remove them from processing
         let wins = card.wins();
-        counts.remove(&index);
-        total += count;
 
         if wins != 0 {
-          changed = true;
-
+          // add new cards for each instance of the card that won
           let range = (index + 1)..(index + 1 + wins);
           range.for_each(|i| {
             counts.entry(i).and_modify(|v| *v += count).or_insert(count);
           });
         }
       }
-
-      if !changed {
-        break;
-      }
     }
 
-    total + counts.values().sum::<usize>()
+    total
   }
 
   pub fn wins(&self) -> usize {
