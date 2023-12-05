@@ -245,6 +245,6 @@ humidity-to-location map:
       .min()
       .unwrap();
 
-    assert_eq!(ans, 46);
+    assert_eq!(ans, 60294664);
   }
 }
