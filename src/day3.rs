@@ -218,7 +218,7 @@ mod tests {
 
     let s = m
       .iter()
-      .filter(|(star_pos, parts)| parts.len() == 2)
+      .filter(|(_star_pos, parts)| parts.len() == 2)
       .map(|(_, parts)| {
         if let PartValue::Number(v1) = e.parts.get(&parts[0]).unwrap().value {
           if let PartValue::Number(v2) = e.parts.get(&parts[1]).unwrap().value {
@@ -247,7 +247,7 @@ mod tests {
 
     let s = m
       .iter()
-      .filter(|(star_pos, parts)| parts.len() == 2)
+      .filter(|(_star_pos, parts)| parts.len() == 2)
       .map(|(_, parts)| {
         if let PartValue::Number(v1) = e.parts.get(&parts[0]).unwrap().value {
           if let PartValue::Number(v2) = e.parts.get(&parts[1]).unwrap().value {

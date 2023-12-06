@@ -18,7 +18,7 @@ impl Race {
     let mut range = 1..self.time;
 
     if let Some(lo) = range.find(&test) {
-      let hi = range.rfind(test).unwrap();
+      let hi = range.rfind(&test).unwrap();
       hi + 1 - lo
     } else {
       // no way to win
