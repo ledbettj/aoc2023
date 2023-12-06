@@ -1,16 +1,16 @@
-use std::ops::{RangeInclusive, Range};
 use std::collections::HashMap;
+use std::ops::{Range, RangeInclusive};
 use std::str::FromStr;
 
-const INPUT : &'static str = include_str!("../inputs/day5.txt");
+const INPUT: &'static str = include_str!("../inputs/day5.txt");
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Entry {
   category: String,
   value: usize,
 }
 
-#[derive(Debug,Clone,Copy,Default)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct ConversionRange {
   src_start: usize,
   dest_start: usize,
@@ -23,16 +23,32 @@ impl FromStr for ConversionRange {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     let mut parts = s.split_whitespace();
 
-    let dest_start = parts.next().ok_or("Missing dest start")?.parse().map_err(|_| "Failed to parse number")?;
-    let src_start = parts.next().ok_or("Missing src start")?.parse().map_err(|_| "Failed to parse number")?;
-    let len = parts.next().ok_or("Missing len")?.parse().map_err(|_| "Failed to parse number")?;
+    let dest_start = parts
+      .next()
+      .ok_or("Missing dest start")?
+      .parse()
+      .map_err(|_| "Failed to parse number")?;
+    let src_start = parts
+      .next()
+      .ok_or("Missing src start")?
+      .parse()
+      .map_err(|_| "Failed to parse number")?;
+    let len = parts
+      .next()
+      .ok_or("Missing len")?
+      .parse()
+      .map_err(|_| "Failed to parse number")?;
 
-    Ok(ConversionRange { dest_start, src_start, len })
+    Ok(ConversionRange {
+      dest_start,
+      src_start,
+      len,
+    })
   }
 }
 
 // for part2
-#[derive(Debug,Clone,Copy,Default)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct SeedRange {
   start: usize,
   len: usize,
@@ -51,27 +67,30 @@ impl ConversionRange {
 #[derive(Debug)]
 pub struct Almanac {
   seeds: Vec<Entry>,
-  pub conversions: HashMap<String, Vec<ConversionRange>>
+  pub conversions: HashMap<String, Vec<ConversionRange>>,
 }
 
 impl Entry {
   pub fn new(category: &str, value: usize) -> Self {
-    Self { category: category.into(), value }
+    Self {
+      category: category.into(),
+      value,
+    }
   }
 
   pub fn convert(&self, to: &str, a: &Almanac) -> Option<Entry> {
     let conversion_type = format!("{}-to-{}", self.category, to);
-    a
-      .conversions
-      .get(&conversion_type)
-      .map(|ranges|{
-        let v = if let Some(range) = ranges.iter().find(|r| r.includes(self.value)) {
-          range.convert(self.value)
-        } else {
-          self.value
-        };
-        Entry { category: to.into(), value: v }
-      })
+    a.conversions.get(&conversion_type).map(|ranges| {
+      let v = if let Some(range) = ranges.iter().find(|r| r.includes(self.value)) {
+        range.convert(self.value)
+      } else {
+        self.value
+      };
+      Entry {
+        category: to.into(),
+        value: v,
+      }
+    })
   }
 }
 
@@ -82,7 +101,10 @@ impl Almanac {
 
     while let Some(start) = i.next() {
       let len = i.next().unwrap();
-      let r = Range { start: start.value, end: start.value + len.value };
+      let r = Range {
+        start: start.value,
+        end: start.value + len.value,
+      };
       results.push(r)
     }
 
@@ -117,9 +139,7 @@ impl FromStr for Almanac {
         .split_once(" ")
         .ok_or("Failed to parse conversion map")?;
 
-      let ranges = lines
-        .map(|line| line.parse())
-        .collect::<Result<_, _>>()?;
+      let ranges = lines.map(|line| line.parse()).collect::<Result<_, _>>()?;
 
       conversions.insert(conversion_type.to_string(), ranges);
     }
@@ -132,7 +152,7 @@ impl FromStr for Almanac {
 mod tests {
   use super::*;
 
-  const EXAMPLE_INPUT : &'static str = "seeds: 79 14 55 13
+  const EXAMPLE_INPUT: &'static str = "seeds: 79 14 55 13
 
 seed-to-soil map:
 50 98 2
@@ -169,15 +189,26 @@ humidity-to-location map:
   #[test]
   fn part1_example() {
     let a: Almanac = EXAMPLE_INPUT.parse().expect("Failed to parse input");
-    let path = ["soil", "fertilizer", "water", "light", "temperature", "humidity", "location"];
+    let path = [
+      "soil",
+      "fertilizer",
+      "water",
+      "light",
+      "temperature",
+      "humidity",
+      "location",
+    ];
 
     let ans = a
       .seeds
       .iter()
-      .map(|seed|{
-        path.iter().fold(seed.clone(), |e, &next|{
-          e.convert(next, &a).expect("Failed to convert!")
-        }).value
+      .map(|seed| {
+        path
+          .iter()
+          .fold(seed.clone(), |e, &next| {
+            e.convert(next, &a).expect("Failed to convert!")
+          })
+          .value
       })
       .min()
       .unwrap();
@@ -188,15 +219,26 @@ humidity-to-location map:
   #[test]
   fn part1_solution() {
     let a: Almanac = INPUT.parse().expect("Failed to parse input");
-    let path = ["soil", "fertilizer", "water", "light", "temperature", "humidity", "location"];
+    let path = [
+      "soil",
+      "fertilizer",
+      "water",
+      "light",
+      "temperature",
+      "humidity",
+      "location",
+    ];
 
     let ans = a
       .seeds
       .iter()
-      .map(|seed|{
-        path.iter().fold(seed.clone(), |e, &next|{
-          e.convert(next, &a).expect("Failed to convert!")
-        }).value
+      .map(|seed| {
+        path
+          .iter()
+          .fold(seed.clone(), |e, &next| {
+            e.convert(next, &a).expect("Failed to convert!")
+          })
+          .value
       })
       .min()
       .unwrap();
@@ -207,18 +249,27 @@ humidity-to-location map:
   #[test]
   fn part2_example() {
     let a: Almanac = EXAMPLE_INPUT.parse().expect("Failed to parse input");
-    let path = ["soil", "fertilizer", "water", "light", "temperature", "humidity", "location"];
+    let path = [
+      "soil",
+      "fertilizer",
+      "water",
+      "light",
+      "temperature",
+      "humidity",
+      "location",
+    ];
 
     let ans = a
       .part2_seed_ranges()
       .iter()
-      .flat_map(|range|{
-        range.clone().map(|n| Entry::new("seed", n))
-      })
-      .map(|seed|{
-        path.iter().fold(seed.clone(), |e, &next|{
-          e.convert(next, &a).expect("Failed to convert!")
-        }).value
+      .flat_map(|range| range.clone().map(|n| Entry::new("seed", n)))
+      .map(|seed| {
+        path
+          .iter()
+          .fold(seed.clone(), |e, &next| {
+            e.convert(next, &a).expect("Failed to convert!")
+          })
+          .value
       })
       .min()
       .unwrap();
@@ -229,18 +280,27 @@ humidity-to-location map:
   #[test]
   fn part2_solution() {
     let a: Almanac = INPUT.parse().expect("Failed to parse input");
-    let path = ["soil", "fertilizer", "water", "light", "temperature", "humidity", "location"];
+    let path = [
+      "soil",
+      "fertilizer",
+      "water",
+      "light",
+      "temperature",
+      "humidity",
+      "location",
+    ];
 
     let ans = a
       .part2_seed_ranges()
       .iter()
-      .flat_map(|range|{
-        range.clone().map(|n| Entry::new("seed", n))
-      })
-      .map(|seed|{
-        path.iter().fold(seed.clone(), |e, &next|{
-          e.convert(next, &a).expect("Failed to convert!")
-        }).value
+      .flat_map(|range| range.clone().map(|n| Entry::new("seed", n)))
+      .map(|seed| {
+        path
+          .iter()
+          .fold(seed.clone(), |e, &next| {
+            e.convert(next, &a).expect("Failed to convert!")
+          })
+          .value
       })
       .min()
       .unwrap();
