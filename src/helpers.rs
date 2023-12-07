@@ -1,49 +1,29 @@
-use std::str::FromStr;
+use std::{error::Error, fmt::Display};
 
-pub struct Input(pub &'static str);
+#[derive(Debug)]
+pub struct ParseError {
+  message: String,
+}
 
-impl Input {
-  pub fn lines(&self) -> Vec<&str> {
-    self.0.lines().collect()
-  }
-
-  pub fn lines_into<T>(&self) -> Vec<T>
-  where
-    T: From<&'static str>,
-  {
-    self.0.lines().map(|line| line.into()).collect()
-  }
-
-  pub fn lines_parse<T>(&self) -> Result<Vec<T>, T::Err>
-  where
-    T: FromStr,
-  {
-    self.0.lines().map(|line| line.parse()).collect()
+impl ParseError {
+  pub fn new<S: Into<String>>(message: S) -> Self {
+    Self {
+      message: message.into(),
+    }
   }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn test_input_lines() {
-    let i = Input("Hello\nWorld\n");
-    assert_eq!(i.lines(), vec!["Hello", "World"]);
+impl Display for ParseError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    writeln!(f, "Parse error: {}", self.message)
   }
+}
 
-  #[test]
-  fn test_input_lines_into() {
-    let i = Input("Hello\nWorld\n");
-    assert_eq!(
-      i.lines_into::<String>(),
-      vec!["Hello".to_string(), "World".to_string()]
-    );
-  }
+impl Error for ParseError {}
 
-  #[test]
-  fn test_input_lines_parse() {
-    let i = Input("1\n2\n");
-    assert_eq!(i.lines_parse::<i32>(), Ok(vec![1, 2]));
-  }
+#[macro_export]
+macro_rules! parse_error {
+  ($($arg:tt)*) => {
+    ParseError::new(format!($($arg)*))
+  };
 }

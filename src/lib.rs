@@ -1,6 +1,6 @@
 mod helpers;
 
-pub use helpers::*;
+pub(crate) use helpers::*;
 
 #[allow(dead_code)]
 pub mod day1;
@@ -14,3 +14,5 @@ pub mod day4;
 pub mod day5;
 #[allow(dead_code)]
 pub mod day6;
+#[allow(dead_code)]
+pub mod day7;
