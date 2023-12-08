@@ -13,22 +13,22 @@ enum Dir {
   Right,
 }
 
-#[derive(Debug)]
-struct Map {
-  pattern: Vec<Dir>,
-  nodes: HashMap<String, (String, String)>,
-}
-
 impl TryFrom<char> for Dir {
-  type Error = anyhow::Error;
+  type Error = ParseError;
 
   fn try_from(value: char) -> Result<Self, Self::Error> {
     match value {
       'L' => Ok(Dir::Left),
       'R' => Ok(Dir::Right),
-      _ => Err(parse_error!("Invalid direction: {}", value).into()),
+      _ => Err(parse_error!("Invalid direction: {}", value)),
     }
   }
+}
+
+#[derive(Debug)]
+struct Map {
+  pattern: Vec<Dir>,
+  nodes: HashMap<String, (String, String)>,
 }
 
 impl FromStr for Map {
@@ -52,10 +52,7 @@ impl FromStr for Map {
         let c = r
           .captures(line)
           .ok_or(parse_error!("Failed to parse line: {}", line))?;
-        let e = c.get(1).unwrap().as_str();
-        let l = c.get(2).unwrap().as_str();
-        let r = c.get(3).unwrap().as_str();
-        Ok::<(String, (String, String)), Self::Err>((e.to_string(), (l.to_string(), r.to_string())))
+        Ok::<_, anyhow::Error>((c[1].to_string(), (c[2].to_string(), c[3].to_string())))
       })
       .collect::<Result<_, _>>()?;
 
@@ -65,7 +62,7 @@ impl FromStr for Map {
 
 impl Map {
   pub fn step(&self, from: &str, n: usize) -> &str {
-    let (l, r) = self.nodes.get(from).unwrap();
+    let (l, r) = &self.nodes[from];
     match self.pattern[n % self.pattern.len()] {
       Dir::Left => l,
       Dir::Right => r,
@@ -76,14 +73,14 @@ impl Map {
     self.steps_to_complete("AAA", |node| node == "ZZZ")
   }
 
-  pub fn steps_to_complete<F>(&self, start: &str, end: F) -> usize
+  pub fn steps_to_complete<F>(&self, start: &str, is_end: F) -> usize
   where
     F: Fn(&str) -> bool,
   {
     let mut current = start;
     let mut steps = 0;
 
-    while !end(current) {
+    while !is_end(current) {
       current = self.step(current, steps);
       steps += 1;
     }
