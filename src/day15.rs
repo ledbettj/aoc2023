@@ -1,5 +1,3 @@
-use std::{collections::HashMap, str::FromStr};
-
 const INPUT: &'static str = include_str!("../inputs/day15.txt");
 
 #[derive(Eq, PartialEq, Clone, Debug)]
@@ -44,7 +42,7 @@ impl Boxes {
           if let Some((i, _)) = self.boxes[h]
             .iter()
             .enumerate()
-            .find(|(index, lense)| lense.label == label)
+            .find(|(_, lense)| lense.label == label)
           {
             self.boxes[h].remove(i);
           }
@@ -56,7 +54,7 @@ impl Boxes {
           if let Some((i, _)) = self.boxes[h]
             .iter()
             .enumerate()
-            .find(|(index, lense)| lense.label == label)
+            .find(|(_, lense)| lense.label == label)
           {
             self.boxes[h][i].focal_length = focal_length;
           } else {
