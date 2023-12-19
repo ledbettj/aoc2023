@@ -105,10 +105,7 @@ impl PartialOrd for Hand {
       .partial_cmp(&other.rank) // order by rank
       .map(|ord| match ord {
         // if rank is the same, order by cards
-        Ordering::Equal => self
-          .cards
-          .partial_cmp(&other.cards)
-          .unwrap(),
+        Ordering::Equal => self.cards.partial_cmp(&other.cards).unwrap(),
         _ => ord,
       })
   }
@@ -132,7 +129,9 @@ impl FromStr for Hand {
         'Q' => Ok(12),
         'J' => Ok(11),
         'T' => Ok(10),
-        n => ch.to_digit(10).ok_or_else(|| parse_error!("Invalid character: {}", n)),
+        n => ch
+          .to_digit(10)
+          .ok_or_else(|| parse_error!("Invalid character: {}", n)),
       })
       .collect::<Result<_, _>>()?;
 

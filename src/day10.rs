@@ -1,5 +1,5 @@
-use crate::ParseError;
 use crate::parse_error;
+use crate::ParseError;
 
 use colored::Colorize;
 
@@ -8,9 +8,9 @@ use std::collections::HashSet;
 use std::fmt::Display;
 use std::str::FromStr;
 
-const INPUT : &'static str = include_str!("../inputs/day10.txt");
+const INPUT: &'static str = include_str!("../inputs/day10.txt");
 
-#[derive(Debug,Clone,Copy,PartialEq,Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Pipes {
   Vertical,
   Horizontal,
@@ -30,27 +30,31 @@ impl Pipes {
   pub fn neighbors(&self, (x, y): (isize, isize)) -> [(isize, isize); 2] {
     match self {
       Pipes::Vertical => [(x, y - 1), (x, y + 1)],
-      Pipes::Horizontal => [(x -1, y), (x + 1, y)],
+      Pipes::Horizontal => [(x - 1, y), (x + 1, y)],
       Pipes::NorthEast => [(x, y - 1), (x + 1, y)],
       Pipes::NorthWest => [(x, y - 1), (x - 1, y)],
       Pipes::SouthWest => [(x, y + 1), (x - 1, y)],
       Pipes::SouthEast => [(x, y + 1), (x + 1, y)],
-      Pipes::Start => unreachable!()
+      Pipes::Start => unreachable!(),
     }
   }
 }
 
 impl Display for Pipes {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}", match self {
-      Pipes::Vertical => '\u{2502}',
-      Pipes::Horizontal => '\u{2500}',
-      Pipes::NorthEast => '\u{2514}',
-      Pipes::NorthWest => '\u{2518}',
-      Pipes::SouthWest => '\u{2510}',
-      Pipes::SouthEast => '\u{250c}',
-      Pipes::Start => '?',
-    })
+    write!(
+      f,
+      "{}",
+      match self {
+        Pipes::Vertical => '\u{2502}',
+        Pipes::Horizontal => '\u{2500}',
+        Pipes::NorthEast => '\u{2514}',
+        Pipes::NorthWest => '\u{2518}',
+        Pipes::SouthWest => '\u{2510}',
+        Pipes::SouthEast => '\u{250c}',
+        Pipes::Start => '?',
+      }
+    )
   }
 }
 
@@ -66,7 +70,7 @@ impl TryFrom<char> for Pipes {
       '7' => Ok(Pipes::SouthWest),
       'F' => Ok(Pipes::SouthEast),
       'S' => Ok(Pipes::Start),
-      ch  => Err(parse_error!("Invalid pipe character: {}", ch)),
+      ch => Err(parse_error!("Invalid pipe character: {}", ch)),
     }
   }
 }
@@ -83,7 +87,7 @@ impl FromStr for Grid {
     let pipes = s
       .lines()
       .enumerate()
-      .flat_map(|(y, line)|{
+      .flat_map(|(y, line)| {
         line
           .chars()
           .enumerate()
@@ -93,9 +97,12 @@ impl FromStr for Grid {
             Err(e) => Err(e),
           })
       })
-      .collect::<Result<_,_>>()?;
+      .collect::<Result<_, _>>()?;
 
-    Ok(Self { pipes, path: HashSet::new() })
+    Ok(Self {
+      pipes,
+      path: HashSet::new(),
+    })
   }
 }
 
@@ -104,7 +111,7 @@ impl Grid {
     *self
       .pipes
       .iter()
-      .find(|&(_, &v)| v == Pipes::Start )
+      .find(|&(_, &v)| v == Pipes::Start)
       .expect("No start position in map")
       .0
   }
@@ -163,7 +170,7 @@ impl Display for Grid {
 mod tests {
   use super::*;
 
-  const EXAMPLE_INPUT : &'static str = "7-F7-
+  const EXAMPLE_INPUT: &'static str = "7-F7-
 .FJ|7
 SJLL7
 |F--J
@@ -189,12 +196,8 @@ LJ.LJ";
   }
 
   #[test]
-  fn part2_example() {
-
-  }
+  fn part2_example() {}
 
   #[test]
-  fn part2_solution() {
-
-  }
+  fn part2_solution() {}
 }

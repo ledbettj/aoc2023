@@ -65,13 +65,21 @@ impl Universe {
     self
       .galaxies
       .iter()
-      .map(|&a|{
+      .map(|&a| {
         self
           .galaxies
           .iter()
-          .filter_map(|&b| if a != b { Some(self.min_dist(a, b)) } else { None })
+          .filter_map(|&b| {
+            if a != b {
+              Some(self.min_dist(a, b))
+            } else {
+              None
+            }
+          })
           .sum::<usize>()
-      }).sum::<usize>() / 2
+      })
+      .sum::<usize>()
+      / 2
   }
 }
 

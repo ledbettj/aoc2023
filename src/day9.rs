@@ -5,7 +5,7 @@ const INPUT: &'static str = include_str!("../inputs/day9.txt");
 
 pub enum Side {
   Front, // generating elements at the front of the rows (p2)
-  Back, // generating elements at the end of the rows (p2)
+  Back,  // generating elements at the end of the rows (p2)
 }
 
 #[derive(Debug)]

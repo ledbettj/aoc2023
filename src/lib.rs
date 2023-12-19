@@ -5,6 +5,26 @@ pub(crate) use helpers::*;
 #[allow(dead_code)]
 pub mod day1;
 #[allow(dead_code)]
+pub mod day10;
+#[allow(dead_code)]
+pub mod day11;
+#[allow(dead_code)]
+pub mod day12;
+#[allow(dead_code)]
+pub mod day13;
+#[allow(dead_code)]
+pub mod day14;
+#[allow(dead_code)]
+pub mod day15;
+#[allow(dead_code)]
+pub mod day16;
+#[allow(dead_code)]
+pub mod day17;
+#[allow(dead_code)]
+pub mod day18;
+#[allow(dead_code)]
+pub mod day19;
+#[allow(dead_code)]
 pub mod day2;
 #[allow(dead_code)]
 pub mod day3;
@@ -20,17 +40,3 @@ pub mod day7;
 pub mod day8;
 #[allow(dead_code)]
 pub mod day9;
-#[allow(dead_code)]
-pub mod day10;
-#[allow(dead_code)]
-pub mod day11;
-#[allow(dead_code)]
-pub mod day12;
-#[allow(dead_code)]
-pub mod day13;
-#[allow(dead_code)]
-pub mod day14;
-#[allow(dead_code)]
-pub mod day15;
-#[allow(dead_code)]
-pub mod day16;
